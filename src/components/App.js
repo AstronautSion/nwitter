@@ -1,9 +1,8 @@
 import React from 'react';
+import AppRouter from './Router';
 
 function App() {
-  return (
-    <div>12</div>
-  );
+  return <AppRouter />;
 }
 
 export default App;
