@@ -1,8 +1,76 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {authService, firebaseInstance} from 'fbase';
+
 
 const Auth = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [newAccount, setNewAccount] = useState(true);
+    const [error, setError] = useState("");
+    const onChange = (event) =>{
+        const { target : {name, value}} = event;
+        if(name === "email"){
+            setEmail(value);
+        }else if(name === "password"){
+            setPassword(value);
+        }
+    }
+    const onSubmit = async(event) =>{
+        event.preventDefault();
+        try {
+            let data;
+            if(newAccount){
+                //create Account
+                data = await authService.createUserWithEmailAndPassword(email, password);
+            }else{
+                //login
+                data = await authService.signInWithEmailAndPassword(email, password);
+            }
+        console.log(data)
+        } catch(error){
+            setError(error.message);
+            console.log(error.message)
+        }
+    }
+    const toggleAccount = () => setNewAccount((prev) => !prev);
+    const onSocialClick = async (event) => {
+        const { target: {name}} = event;
+        let provider;
+        if(name === 'google'){
+            provider = new firebaseInstance.auth.GoogleAuthProvider();
+        }else if(name === 'github'){
+            provider = new firebaseInstance.auth.GithubAuthProvider();
+        }
+        const data = await authService.signInWithPopup(provider);
+    }
     return(
-        <div>Auth</div>
+        <div>
+            <form onSubmit={onSubmit}>
+                <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="Email" 
+                    value={email} 
+                    onChange={onChange} 
+                    required 
+                />
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password" 
+                    value={password} 
+                    onChange={onChange} 
+                    required 
+                />
+                <input type="submit" value="Login" value={newAccount ? "Create Account" : "Signin"}/>
+                {error}
+            </form>
+            <span onClick={toggleAccount}>{newAccount ? "Login" : "Create Account"}</span>
+            <div>
+                <button onClick={onSocialClick} name="google">Continue with Google</button>
+                <button onClick={onSocialClick} name="github">Continue with Github</button>
+            </div>
+        </div>
     )
 }
 export default Auth;
