@@ -1,0 +1,22 @@
+html, body{
+    padding:0;
+    margin:0;
+}
+
+nav{
+    display:block;
+    border-bottom:1px solid #ddd;
+    margin-bottom:1em;
+}
+nav li{
+    list-style:none;
+    padding:.5em 1em;
+    font-size:1.2rem;
+    color:#111;
+    display:inline-block;
+}
+
+nav li a{
+    color:gray;
+    text-decoration:none;
+}
