@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {dbService} from 'fbase';
+import {v4 as uuidv4} from 'uuid';
+import {dbService, storageService} from 'fbase';
 import Nweet from 'components/Nweet';
 
 const Home = ({userObj}) => {
@@ -19,12 +20,22 @@ const Home = ({userObj}) => {
 
     const onSumit = async (event) => {
         event.preventDefault();
-        await dbService.collection("nweets").add({
+        let attachmentUrl ="";
+
+        if(attachment !== ""){
+            const attachmentRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`);
+            const response = await attachmentRef.putString(attachment, "data_url");
+            attachmentUrl = await response.ref.getDownloadURL();
+        }
+        const nweetObj = {
             text: nweet,
             createAt: Date.now(),
             creatorId : userObj.uid,
-        });
+            attachmentUrl 
+        };
+        await dbService.collection('nweets').add(nweetObj);
         setNweet("");
+        setAttachment("");
     }
     const onChange = (event) => {
         const {target : {value}} = event;
@@ -50,7 +61,7 @@ const Home = ({userObj}) => {
                 <input type="text" value={nweet} onChange={onChange} placeholder="what's on your mind?" maxLength={120} />
                 <input type="file" accept="image/*" onChange={onFileChange}/>
                 <input type="submit" value="Nweet" />
-                {attachment && <div><img src={attachment} width="50px" height="50px" />
+                {attachment && <div><img src={attachment} width="50px" height="50px" alt={nweet} title={nweet} />
                 <button onClick={onClearPhotoClick}>clear</button>
                 </div>}
             </form>
