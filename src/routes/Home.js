@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {dbService} from 'fbase';
 import Nweet from 'components/Nweet';
-import './Home.css';
 
 const Home = ({userObj}) => {
     const [nweet, setNweet] = useState("");
